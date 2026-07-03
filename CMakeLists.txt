@@ -1,32 +1,40 @@
 cmake_minimum_required(VERSION 3.10)
-project(logging_library VERSION 1.0)
+project(logging_library VERSION 1.3)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIERED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(BUILD_TESTS "Build tests" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 
 if(MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-    
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.12.1
+file(GLOB_RECURSE SOURCES 
+    "src/Core/*.cpp"
+    "src/Filter/*.cpp"
+    "src/Enricher/*.cpp"
+    "src/Formatter/*.cpp"
+    "src/Sink/*.cpp"
 )
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+add_library(logging_lib STATIC ${SOURCES})
 
-FetchContent_MakeAvailable(googletest)
+target_include_directories(logging_lib PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Filter
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Enricher
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Formatter
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Sink
+)
 
-add_executable(unit_tests test/unit_tests.cpp)
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()
 
-target_include_directories(unit_tests PRIVATE src)
-
-target_link_libraries(unit_tests gtest_main gtest)
-
-include(GoogleTest)
-gtest_discover_tests(unit_tests)
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()

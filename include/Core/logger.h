@@ -24,30 +24,6 @@ public:
 		enrich(std::move(e)),
 		sinks(std::move(s)) {
 	}
-	void log(log_level level, const std::string& message, const std::map<std::string, std::string>& fields = {}) {
-		log_record record{
-			level, message, name, std::chrono::system_clock::now(), fields
-		};
-		for (const auto& filt_ptr : filters) {
-			if (!filt_ptr->should_log(record)) {
-				return;
-			}
-		}
-		if (enrich) {
-			record = enrich->enrich(record);
-		}
-
-		plain_text_formater formatter;
-		std::string formated = formatter.format(record);
-		for (const auto& sink_ptr : sinks) {
-			sink_ptr->write(formated);
-		}
-
-	}
-	void flush() {
-		for (auto& sink_ptr : sinks) {
-			sink_ptr->flush();
-		}
-	}
-
+	void log(log_level level, const std::string& message, const std::map<std::string, std::string>& fields = {});
+	void flush();
 };
