@@ -1,4 +1,5 @@
 #include "json_text_formater.h"
+#include "LevelToString.h"
 #include <sstream>
 #include <iomanip>
 
@@ -18,17 +19,6 @@ std::string json_text_formater::escape_json(const std::string& str) const {
 	}
 	return result;
 }
-std::string json_text_formater::level_to_string(log_level lr) const {
-	switch (lr) {
-	case log_level::TRACE: return "TRACE";
-	case log_level::DEBUG: return "DEBUG";
-	case log_level::INFO: return "INFO";
-	case log_level::WARN: return "WARN";
-	case log_level::ERROR: return "ERROR";
-	case log_level::FATAL: return "FATAL";
-	default: return "UNKNOWN";
-	}
-}
 
 std::string json_text_formater::format(const log_record& lr) {
 	std::stringstream s_stream;
@@ -40,7 +30,7 @@ std::string json_text_formater::format(const log_record& lr) {
 	auto add_field = [&](const std::string& key, const std::string& value) {
 		s_stream << "\"" << escape_json(key) << "\":\"" << escape_json(value) << "\",";
 		};
-	add_field("level", level_to_string(lr.level));
+	add_field("level", LevelToString::to_string(lr.level));
 	add_field("logger", lr.logger_name);
 	add_field("message", lr.message);
 	add_field("timestamp", time_string.str());

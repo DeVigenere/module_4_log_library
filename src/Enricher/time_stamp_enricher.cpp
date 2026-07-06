@@ -3,7 +3,7 @@
 #include <sstream>
 
 log_record time_stamp_enricher::enrich(log_record& lr) {
-	lr = next->enrich(std::move(lr));
+	lr = next->enrich(lr);
 	auto time = std::chrono::system_clock::to_time_t(lr.time_stamp);
 	auto millisec = std::chrono::duration_cast<std::chrono::milliseconds>(lr.time_stamp.time_since_epoch()).count() % 1000;
 	std::stringstream s_stream;

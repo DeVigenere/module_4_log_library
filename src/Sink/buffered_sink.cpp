@@ -5,7 +5,7 @@ bool buffered_sink::open() {
 }
 
 void buffered_sink::write(const log_record& lr) {
-	std::string formated = downstream->format->format(lr);
+	std::string formated = downstream->formatter->format(lr);
 	write_formated(formated);
 }
 

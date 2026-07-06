@@ -125,8 +125,8 @@ TEST(LoggerTest, BasicLogging) {
         TestSink() : log_sink(nullptr) {}
         bool open() override { return true; }
         void write(const log_record& lr) override {
-            if (format) {
-                last_msg = format->format(lr);
+            if (formatter) {
+                last_msg = formatter->format(lr);
             }
         }
         void write_formated(const std::string& msg) override {
@@ -144,7 +144,7 @@ TEST(LoggerTest, BasicLogging) {
 
     std::vector<std::unique_ptr<log_sink>> sinks;
     auto sink = std::make_unique<TestSink>();
-    sink->format = std::make_unique<plain_text_formater>();
+    sink->formatter = std::make_unique<plain_text_formater>();
     auto* sink_ptr = sink.get();
     sinks.push_back(std::move(sink));
 
